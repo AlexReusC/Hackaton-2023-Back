@@ -1,0 +1,9 @@
+# Python virtual env
+venv/
+
+# Migrations
+migrations/
+__pycache__/
+
+#Static files
+static/
