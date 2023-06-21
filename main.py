@@ -61,4 +61,18 @@ def signup():
 
     return json.loads(json_util.dumps(user)), 200
 
+@app.route("/login/", methods=["POST"])
+def login():
+    collection = db["usuarios"]
+
+    username = json.loads(request.form["username"])
+    password = json.loads(request.form["password"])
+
+    print(hash(password))
+
+    if collection.count_documents({"nombre": username, "contrasena": hash(password)}) == 0:
+        return jsonify({"message": "account doesnt exist"}), 400
+
+    user = collection.find({"nombre": username, "contrasena": hash(password)})
+    return json.loads(json_util.dumps(user)), 200
 
