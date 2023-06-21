@@ -55,12 +55,21 @@ def signup():
     password = json.loads(request.form["password"])
     email = json.loads(request.form["email"])
     edad = json.loads(request.form["edad"])
-    discapacidades = json.loads(request.form["discapacidades"])
+    discapacidad1 = json.loads(request.form["discapacidad1"])
+    discapacidad2 = json.loads(request.form["discapacidad2"])
+    discapacidad3 = json.loads(request.form["discapacidad3"])
+    discapacidad4 = json.loads(request.form["discapacidad4"])
+    discapacidad5 = json.loads(request.form["discapacidad5"])
+    discapacidades = [discapacidad1, discapacidad2, discapacidad3, discapacidad4, discapacidad5]
+
+    mapping = {"true": 1, "false": 0}
+    resultados = [mapping[elem] for elem in discapacidades]
+    
 
     if collection.count_documents({"nombre": username}) > 0:
         return jsonify({"message": "username already exists"}), 400
 
-    user = {"nombre": username, "email": email, "contrasena": hash(password), "edad": edad, "discapacidades": discapacidades}
+    user = {"nombre": username, "email": email, "contrasena": hash(password), "edad": edad, "discapacidades": resultados}
     collection.insert_one(user)
 
     return json.loads(json_util.dumps(user)), 200
