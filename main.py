@@ -18,38 +18,6 @@ cluster =  MongoClient("mongodb://localhost:27017")
 os.environ["PYTHONHASHSEED"] = "12345"
 db = cluster["hackaton-2023"]
 
-@app.route("/createhotel/", methods=["POST"])
-def create_hotel():
-    score = json.loads(request.form["score"])
-
-    collection = db["establecimientos"]
-    post = {"calificacion": score, "tipo": 0}
-    #collection.insert_one(post)
-    return jsonify(post), 201
-
-@app.route("/popularhotel/", methods=["GET"])
-def popularhotel():
-    collection = db["establecimientos"]
-    popularhotels = list(collection.find({"tipo": 0}).sort("calificacion_accesibilidad", -1).limit(5))
-    return json.loads(json_util.dumps(popularhotels)), 200
-
-@app.route("/popularrestaurante/", methods=["GET"])
-def popularrestaurante():
-    collection = db["establecimientos"]
-    popularhotels = list(collection.find({"tipo": 1}).sort("calificacion_accesibilidad", -1).limit(5))
-    return json.loads(json_util.dumps(popularhotels)), 200
-
-@app.route("/findstablishment/", methods=["GET"])
-def findstablishment():
-    collection = db["establecimientos"]
-    name = request.args.get("name")
-
-    popularhotels = list(collection.find({'$or': [
-        {'nombre': {"$regex": name, "$options": "i"}},
-        {'etiqueta_ubicación': {"$regex": name, "$options": "i"} }
-    ]}))
-    return json.loads(json_util.dumps(popularhotels)), 200
-
 @app.route("/signup/", methods=["POST"])
 def signup():
     collection = db["usuarios"]
@@ -99,20 +67,37 @@ def login():
     access_token = create_access_token(identity=username)
     return jsonify({"token": access_token}), 200
 
-def parametros_a_calificar(id_establecimiento):
-    collectionEstablecimientos = db["establecimientos"]
-    establecimientoResult =  collectionEstablecimientos.find_one(ObjectId(id_establecimiento))
-    
-    tipo_establecimiento = establecimientoResult['tipo']
-    result = {
-        'banos':2,
-        'pasillos':2,
-        'elevadores': int(establecimientoResult['elevadores']),
-        'mascotas': int(establecimientoResult['mascotas']),
-        'rampa': int(establecimientoResult['existencia_rampa']),
-        'habitaciones': establecimientoResult['tipo'] #0 si, 1 no
-    }
-    return jsonify(result)
+@app.route("/createhotel/", methods=["POST"])
+def create_hotel():
+    score = json.loads(request.form["score"])
+
+    collection = db["establecimientos"]
+    post = {"calificacion": score, "tipo": 0}
+    #collection.insert_one(post)
+    return jsonify(post), 201
+
+@app.route("/popularhotel/", methods=["GET"])
+def popularhotel():
+    collection = db["establecimientos"]
+    popularhotels = list(collection.find({"tipo": 0}).sort("calificacion_accesibilidad", -1).limit(5))
+    return json.loads(json_util.dumps(popularhotels)), 200
+
+@app.route("/popularrestaurante/", methods=["GET"])
+def popularrestaurante():
+    collection = db["establecimientos"]
+    popularhotels = list(collection.find({"tipo": 1}).sort("calificacion_accesibilidad", -1).limit(5))
+    return json.loads(json_util.dumps(popularhotels)), 200
+
+@app.route("/findstablishment/", methods=["GET"])
+def findstablishment():
+    collection = db["establecimientos"]
+    name = request.args.get("name")
+
+    popularhotels = list(collection.find({'$or': [
+        {'nombre': {"$regex": name, "$options": "i"}},
+        {'etiqueta_ubicación': {"$regex": name, "$options": "i"} }
+    ]}))
+    return json.loads(json_util.dumps(popularhotels)), 200
 
 def fetch_establecimiento(id_establecimiento):
     collectionEstablecimientos = db["establecimientos"]
@@ -139,6 +124,21 @@ def detalle_usuario():
     print(usuario)
     print(type(usuario))
     return json.loads(json_util.dumps(usuario))
+
+def parametros_a_calificar(id_establecimiento):
+    collectionEstablecimientos = db["establecimientos"]
+    establecimientoResult =  collectionEstablecimientos.find_one(ObjectId(id_establecimiento))
+    
+    tipo_establecimiento = establecimientoResult['tipo']
+    result = {
+        'banos':2,
+        'pasillos':2,
+        'elevadores': int(establecimientoResult['elevadores']),
+        'mascotas': int(establecimientoResult['mascotas']),
+        'rampa': int(establecimientoResult['existencia_rampa']),
+        'habitaciones': establecimientoResult['tipo'] #0 si, 1 no
+    }
+    return jsonify(result)
 
 @app.route("/establecimiento/parametrosParaCalificar", methods=["GET"])
 def get_parametros_a_calificar():
