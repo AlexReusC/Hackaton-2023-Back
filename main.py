@@ -21,6 +21,11 @@ def create_hotel():
 @app.route("/popularhotel/", methods=["GET"])
 def popularhotel():
     collection = db["establecimientos"]
-    popularhotels = list(collection.find().sort("calificacion", -1).limit(5))
+    popularhotels = list(collection.find({"tipo": 0}).sort("calificacion_accesibilidad", -1).limit(5))
     return json.loads(json_util.dumps(popularhotels)), 200
 
+@app.route("/popularrestaurante/", methods=["GET"])
+def popularrestaurante():
+    collection = db["establecimientos"]
+    popularhotels = list(collection.find({"tipo": 1}).sort("calificacion_accesibilidad", -1).limit(5))
+    return json.loads(json_util.dumps(popularhotels)), 200
