@@ -1,12 +1,14 @@
 from flask import Flask, jsonify, request
 from pymongo import MongoClient
 from bson import json_util
+from flask_cors import CORS
 import os
 import json
 from flask_jwt_extended import create_access_token,get_jwt,get_jwt_identity, \
                                unset_jwt_cookies, jwt_required, JWTManager
 
 app = Flask(__name__)
+CORS(app)
 app.config["JWT_SECRET_KEY"] = "please-remember-to-change-me"
 jwt = JWTManager(app)
 
@@ -51,10 +53,11 @@ def findstablishment():
 def signup():
     collection = db["usuarios"]
 
-    username = json.loads(request.form["username"])
+    print(request.form["name"])    
+    username = json.loads(request.form["name"])
     password = json.loads(request.form["password"])
     email = json.loads(request.form["email"])
-    edad = json.loads(request.form["edad"])
+    edad = json.loads(request.form["age"])
     discapacidad1 = json.loads(request.form["discapacidad1"])
     discapacidad2 = json.loads(request.form["discapacidad2"])
     discapacidad3 = json.loads(request.form["discapacidad3"])
