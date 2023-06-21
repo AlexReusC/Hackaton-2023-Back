@@ -157,7 +157,16 @@ def parametros_a_calificar(id_establecimiento):
 @app.route("/establecimiento/parametrosParaCalificar", methods=["GET"])
 def get_parametros_a_calificar():
     id_establecimiento = request.args.get('id')
-    return parametros_a_calificar(id_establecimiento), 200
+    guia = json.loads(parametros_a_calificar(id_establecimiento).get_data())
+    print(guia)
+    resultado = []
+    if guia['rampa'] == 2:
+        resultado.append('rampa')
+    resultado.append('pasillo')
+    if guia['habitaciones'] == 0:
+        resultado.append('habitaciones')
+    resultado.append('banos')
+    return resultado, 200
 
 
 @app.route("/establecimiento/calificar", methods=["POST"])
