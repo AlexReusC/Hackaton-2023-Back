@@ -1,11 +1,13 @@
 from flask import Flask, jsonify, request
 from pymongo import MongoClient
 from bson import json_util
+import os
 import json
 
 app = Flask(__name__)
 #cluster = MongoClient("mongodb+srv://hackuser:q1VDRYnxE2XWj9xs@hackaton-2023.a5bw2x3.mongodb.net/?retryWrites=true&w=majority")
 cluster =  MongoClient("mongodb://localhost:27017")
+os.environ["PYTHONHASHSEED"] = "12345"
 db = cluster["hackaton-2023"]
 collection = db["establecimiento"]
 
@@ -15,7 +17,7 @@ def create_hotel():
 
     collection = db["establecimientos"]
     post = {"calificacion": score, "tipo": 0}
-    collection.insert_one(post)
+    #collection.insert_one(post)
     return jsonify(post), 201
 
 @app.route("/popularhotel/", methods=["GET"])
@@ -40,4 +42,23 @@ def findstablishment():
         {'etiqueta_ubicación': {"$regex": name, "$options": "i"} }
     ]}))
     return json.loads(json_util.dumps(popularhotels)), 200
+
+@app.route("/signup/", methods=["POST"])
+def signup():
+    collection = db["usuarios"]
+
+    username = json.loads(request.form["username"])
+    password = json.loads(request.form["password"])
+    email = json.loads(request.form["email"])
+    edad = json.loads(request.form["edad"])
+    discapacidades = json.loads(request.form["discapacidades"])
+
+    if collection.count_documents({"nombre": username}) > 0:
+        return jsonify({"message": "username already exists"}), 400
+
+    user = {"nombre": username, "email": email, "contrasena": hash(password), "edad": edad, "discapacidades": discapacidades}
+    collection.insert_one(user)
+
+    return json.loads(json_util.dumps(user)), 200
+
 
