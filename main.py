@@ -251,4 +251,24 @@ def post_calificar():
 
     return "exito"
 
+@app.route("/comentariosestablecimientos/", methods=["GET"])
+def comentarios_establecimientos():
+    collectionEstablecimientos = db["establecimientos"]
+    collectionResenas = db["resenas"]
+    id_establecimiento = request.args.get('id')
+    establecimiento = collectionEstablecimientos.find_one(ObjectId(id_establecimiento))
+    print(establecimiento)
+    comentarios_id = establecimiento["comentarios"]
+
+    comentarios_object_id = []
+    for x in comentarios_id:
+        comentarios_object_id.append(ObjectId(x))
+
+    print(comentarios_object_id)
+    #comentarios = collectionResenas.find_one(ObjectId('649295863cedd9a0dd61f130'))
+    comentarios = collectionResenas.find({"_id": {"$in": comentarios_object_id}})
+    
+    return json.loads(json_util.dumps(comentarios)), 200
+    
+
 app.run()
