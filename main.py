@@ -66,8 +66,13 @@ def signup():
     discapacidad5 = json.loads(request.form["discapacidad5"])
     discapacidades = [discapacidad1, discapacidad2, discapacidad3, discapacidad4, discapacidad5]
 
-    mapping = {"true": 1, "false": 0}
-    resultados = [mapping[elem] for elem in discapacidades]
+    resultados = []
+    for x in discapacidades:
+        if x == True:
+            resultados.append(1)
+        else:
+            resultados.append(0)
+
     
 
     if collection.count_documents({"nombre": username}) > 0:
@@ -92,7 +97,7 @@ def login():
 
     #user = collection.find({"nombre": username, "contrasena": hash(password)})
     access_token = create_access_token(identity=username)
-    return jsonify(access_token), 200
+    return jsonify({"token": access_token}), 200
 
 def parametros_a_calificar(id_establecimiento):
     collectionEstablecimientos = db["establecimientos"]
