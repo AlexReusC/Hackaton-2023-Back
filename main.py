@@ -18,6 +18,8 @@ cluster =  MongoClient("mongodb://localhost:27017")
 os.environ["PYTHONHASHSEED"] = "12345"
 db = cluster["hackaton-2023"]
 
+DISCAPACIDADES_TEXTOS = ['Silla de ruedas', 'Baston', 'Andadera', 'Muletas', 'Asistencia para la vista']
+
 @app.route("/signup/", methods=["POST"])
 def signup():
     collection = db["usuarios"]
@@ -121,12 +123,20 @@ def detalle_establecimiento():
     return json.loads(json_util.dumps(establecimiento))
 
 @app.route("/detalleUsuario", methods=["GET"])
+@jwt_required()
 def detalle_usuario():
-    id_usuario = request.args.get('id')
+    id_usuario = get_jwt_identity()
     print(id_usuario)
     usuario = fetch_usuario(id_usuario)
     print(usuario)
     print(type(usuario))
+    discapacidades = usuario['discapacidades']
+    discapacidades_textos = []
+    for i in range(len(discapacidades)):
+        if discapacidades[i] == 1:
+            discapacidades_textos.append(DISCAPACIDADES_TEXTOS[i])
+    usuario['discapacidades_textos'] = discapacidades_textos
+
     return json.loads(json_util.dumps(usuario))
 
 def parametros_a_calificar(id_establecimiento):
