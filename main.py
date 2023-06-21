@@ -29,3 +29,15 @@ def popularrestaurante():
     collection = db["establecimientos"]
     popularhotels = list(collection.find({"tipo": 1}).sort("calificacion_accesibilidad", -1).limit(5))
     return json.loads(json_util.dumps(popularhotels)), 200
+
+@app.route("/findstablishment/", methods=["GET"])
+def findstablishment():
+    collection = db["establecimientos"]
+    name = request.args.get("name")
+
+    popularhotels = list(collection.find({'$or': [
+        {'nombre': {"$regex": name, "$options": "i"}},
+        {'etiqueta_ubicación': {"$regex": name, "$options": "i"} }
+    ]}))
+    return json.loads(json_util.dumps(popularhotels)), 200
+
