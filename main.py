@@ -118,6 +118,15 @@ def fetch_establecimiento(id_establecimiento):
     collectionEstablecimientos = db["establecimientos"]
     return collectionEstablecimientos.find_one(ObjectId(id_establecimiento))
 
+
+@app.route("/detalleEstablecimiento", methods=["GET"])
+def detalle_establecimiento():
+    id_establecimiento = request.args.get('id')
+    establecimiento = fetch_establecimiento(id_establecimiento)
+    print(establecimiento)
+    print(type(establecimiento))
+    return json.loads(json_util.dumps(establecimiento))
+
 @app.route("/establecimiento/parametrosParaCalificar", methods=["GET"])
 def get_parametros_a_calificar():
     id_establecimiento = request.args.get('id')
