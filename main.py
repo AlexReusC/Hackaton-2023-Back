@@ -118,6 +118,10 @@ def fetch_establecimiento(id_establecimiento):
     collectionEstablecimientos = db["establecimientos"]
     return collectionEstablecimientos.find_one(ObjectId(id_establecimiento))
 
+def fetch_usuario(id_usuario):
+    collectionUsuarios = db["usuarios"]
+    return collectionUsuarios.find_one(ObjectId(id_usuario))
+
 
 @app.route("/detalleEstablecimiento", methods=["GET"])
 def detalle_establecimiento():
@@ -126,6 +130,15 @@ def detalle_establecimiento():
     print(establecimiento)
     print(type(establecimiento))
     return json.loads(json_util.dumps(establecimiento))
+
+@app.route("/detalleUsuario", methods=["GET"])
+def detalle_usuario():
+    id_usuario = request.args.get('id')
+    print(id_usuario)
+    usuario = fetch_usuario(id_usuario)
+    print(usuario)
+    print(type(usuario))
+    return json.loads(json_util.dumps(usuario))
 
 @app.route("/establecimiento/parametrosParaCalificar", methods=["GET"])
 def get_parametros_a_calificar():
