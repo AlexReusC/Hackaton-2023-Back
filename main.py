@@ -3,9 +3,13 @@ from pymongo import MongoClient
 from bson import json_util
 import os
 import json
+from flask_jwt_extended import create_access_token,get_jwt,get_jwt_identity, \
+                               unset_jwt_cookies, jwt_required, JWTManager
 
 app = Flask(__name__)
-#cluster = MongoClient("mongodb+srv://hackuser:q1VDRYnxE2XWj9xs@hackaton-2023.a5bw2x3.mongodb.net/?retryWrites=true&w=majority")
+app.config["JWT_SECRET_KEY"] = "please-remember-to-change-me"
+jwt = JWTManager(app)
+
 cluster =  MongoClient("mongodb://localhost:27017")
 os.environ["PYTHONHASHSEED"] = "12345"
 db = cluster["hackaton-2023"]
@@ -73,6 +77,7 @@ def login():
     if collection.count_documents({"nombre": username, "contrasena": hash(password)}) == 0:
         return jsonify({"message": "account doesnt exist"}), 400
 
-    user = collection.find({"nombre": username, "contrasena": hash(password)})
-    return json.loads(json_util.dumps(user)), 200
+    #user = collection.find({"nombre": username, "contrasena": hash(password)})
+    access_token = create_access_token(identity=username)
+    return jsonify(access_token), 200
 
