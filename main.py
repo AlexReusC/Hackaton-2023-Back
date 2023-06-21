@@ -58,21 +58,25 @@ def login():
     username = json.loads(request.form["username"])
     password = json.loads(request.form["password"])
 
-    print(hash(password))
 
     if collection.count_documents({"nombre": username, "contrasena": hash(password)}) == 0:
         return jsonify({"message": "account doesnt exist"}), 400
 
-    #user = collection.find({"nombre": username, "contrasena": hash(password)})
-    access_token = create_access_token(identity=username)
+    user = collection.find_one({"nombre": username, "contrasena": hash(password)})
+    user_id = str(user["_id"])
+    print(user_id)
+    access_token = create_access_token(identity=user_id)
     return jsonify({"token": access_token}), 200
 
 @app.route("/createhotel/", methods=["POST"])
+@jwt_required()
 def create_hotel():
-    score = json.loads(request.form["score"])
+    current_user = get_jwt_identity()
+    print(current_user)
+    #score = json.loads(request.form["score"])
 
     collection = db["establecimientos"]
-    post = {"calificacion": score, "tipo": 0}
+    post = {"calificacion": 5, "tipo": 0}
     #collection.insert_one(post)
     return jsonify(post), 201
 
